@@ -12,7 +12,7 @@ public class EventsIngestorStep {
     public static void run(){
 
         SparkSession spark = SparkSession.builder()
-                .appName("FirstWeekEngagement").master("local[*]")
+                .appName("EventsIngestor").master("local[*]")
                 .getOrCreate();
         //TODO get executors variable and etc as env var and set dev as fallback
 
@@ -26,7 +26,8 @@ public class EventsIngestorStep {
 
         appLoadedEvents.printSchema();
 
-        DataWriter.saveEventsAsPartitionedByDateParquet(registeredEvents, System.getProperty("user.dir") + "/data/processed/registered");
-        DataWriter.saveEventsAsPartitionedByDateParquet(appLoadedEvents, System.getProperty("user.dir") + "/data/processed/app_loaded");
+        //TODO move the path logic from out of here
+        DataWriter.saveEventsAsParquet(registeredEvents, System.getProperty("user.dir") + "/data/processed/registered");
+        DataWriter.saveEventsAsParquet(appLoadedEvents, System.getProperty("user.dir") + "/data/processed/app_loaded");
     }
 }

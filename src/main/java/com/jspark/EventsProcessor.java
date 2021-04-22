@@ -9,7 +9,6 @@ public class EventsProcessor {
     public static void main(String[] args){
         try {
             String step = args[0];
-            
             if(step.equals("step1")){
                 EventsIngestorStep.run();
             }
