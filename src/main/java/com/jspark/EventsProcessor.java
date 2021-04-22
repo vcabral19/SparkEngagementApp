@@ -1,12 +1,12 @@
 package com.jspark;
 
-import com.jspark.schema.UserRegistrationSchema;
-import com.jspark.generic.transformations.SchemaTransformations;
+import com.jspark.ingestion.DataSource;
+import com.jspark.ingestion.ApplicationLoadingIngestion;
+import com.jspark.ingestion.UserRegistrationIngestion;
+
 import org.apache.spark.sql.*;
-
-
 import static org.apache.spark.sql.functions.col;
-
+import static org.apache.spark.sql.functions.date_format;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,38 +17,40 @@ public class EventsProcessor {
     public static void main(String[] args){
 
         SparkSession spark = SparkSession.builder()
-                .appName("FirstWeekEngagement").master("local[*]").getOrCreate();
+                .appName("FirstWeekEngagement").master("local[*]")
+                .getOrCreate();
         //TODO get executors variable and etc as env var and set dev as fallback
 
-        //Encoder<UserRegistrationSchema> userRegistrationSchemaEncoder = Encoders.bean(UserRegistrationSchema.class);
+        Dataset<Row> eventSource = DataSource.getDataFromSource(spark);
 
-        Dataset<Row> events = spark.read().json("data/raw/dataset.json");
+        Dataset<Row> registeredEvents = UserRegistrationIngestion.runUserRegistrationIngestion(eventSource);
 
-        Dataset<Row> registeredEventsDf = events
-                .filter(col("event").equalTo("registered"));
-
-        registeredEventsDf = SchemaTransformations.convertSchema(registeredEventsDf, UserRegistrationSchema.userRegistrationSchema);
-
-        Dataset<Row> appLoadedEventsDf = events
-                .filter(col("event").equalTo("app_loaded"));
+        Dataset<Row> appLoadedEvents = ApplicationLoadingIngestion.runApplicationLoadingIngestion(eventSource);
 
 
+        registeredEvents.printSchema();
+        registeredEvents.show(10, false);
 
+        appLoadedEvents.printSchema();
+        appLoadedEvents.show(10, false);
 
-        Dataset<Row> app_loaded = events.filter(col("event").equalTo("app_loaded"));
-
-        registeredEventsDf.printSchema();
-        registeredEventsDf.show(10, false);
-
-        long registeredCount = registeredEventsDf.count();
-        //long appLoadedCount = app_loaded.count();
+        long registeredCount = registeredEvents.count();
+        long appLoadedCount = appLoadedEvents.count();
         LOGGER.log(Level.INFO, "registered events found: " + registeredCount);
-        //LOGGER.log(Level.INFO, "app_loaded events found: " + appLoadedCount);
+        LOGGER.log(Level.INFO, "app_loaded events found: " + appLoadedCount);
         System.out.println("print registeredCount: " + registeredCount);
-        //System.out.println("print appLoadedCount: " + appLoadedCount);
+        System.out.println("print appLoadedCount: " + appLoadedCount);
 
-
-        //TODO write this datasets as Parquet files with the right columns and datatypes!
+        //TODO modularize me
+        registeredEvents
+                .withColumn("year", date_format(col("timestamp"), "y"))
+                .withColumn("month", date_format(col("timestamp"), "M"))
+                .withColumn("day", date_format(col("timestamp"), "d"))
+                .write()
+                .partitionBy("year","month","day")
+                .mode(SaveMode.Overwrite)
+                .format("parquet")
+                .save(System.getProperty("user.dir") + "/data/processed/registered");
 
     }
 }
