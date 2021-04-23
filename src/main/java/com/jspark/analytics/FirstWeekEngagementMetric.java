@@ -9,6 +9,14 @@ import java.text.DecimalFormat;
 
 public class FirstWeekEngagementMetric {
 
+    //TODO wip
+    private Dataset<Row> registeredEvents;
+    private Dataset<Row> appLoadedEvents;
+
+    public void FirstWeekEngagementMetric(Dataset<Row> registeredEvents, Dataset<Row> appLoadedEvents){
+
+    }
+
     public static Dataset<Row> createProcessableDateColumns(Dataset<Row> datasetWithTimestamp){
         return datasetWithTimestamp
                 .withColumn("dayofweek", functions.date_format(datasetWithTimestamp.col("timestamp"), "E"))

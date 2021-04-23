@@ -1,14 +1,24 @@
 package com.jspark;
 
-import com.jspark.ingestion.DataSource;
 import com.jspark.ingestion.ApplicationLoadingIngestion;
 import com.jspark.ingestion.UserRegistrationIngestion;
+import com.jspark.read.LocalFileSystemDataSource;
+import com.jspark.schema.ApplicationLoadingSchema;
+import com.jspark.schema.UserRegistrationSchema;
+import com.jspark.read.DataFormats;
+
 import com.jspark.write.DataWriter;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.types.StructType;
 
 public class EventsIngestorStep {
+    private static final String path = "data/raw/dataset.json";
+    private static final DataFormats dataFormat = DataFormats.JSON;
+    private static final StructType userRegistrationSchema = UserRegistrationSchema.getSchema();
+    private static final StructType applicationLoadingSchema = ApplicationLoadingSchema.getSchema();
+
     public static void run(){
         SparkSession spark = SparkSession.builder()
                 .appName("EventsIngestor").master("local[*]")
@@ -16,11 +26,16 @@ public class EventsIngestorStep {
         //TODO get executors variable and etc as env var and set dev as fallback
 
         //TODO user interface for DataSource and maybe in other stuff
-        Dataset<Row> eventSource = DataSource.getDataFromSource(spark);
+        LocalFileSystemDataSource localFileSystemDataSource = new LocalFileSystemDataSource(spark, dataFormat, path);
 
-        Dataset<Row> registeredEvents = UserRegistrationIngestion.runUserRegistrationIngestion(eventSource);
+        Dataset<Row> eventSource = localFileSystemDataSource.getDataFromSource();
 
-        Dataset<Row> appLoadedEvents = ApplicationLoadingIngestion.runApplicationLoadingIngestion(eventSource);
+        //TODO make this an object and remove static
+        UserRegistrationIngestion userIngestion = new UserRegistrationIngestion(eventSource, userRegistrationSchema);
+        Dataset<Row> registeredEvents = userIngestion.runIngestion();
+
+        ApplicationLoadingIngestion applicationIngestion = new ApplicationLoadingIngestion(eventSource, applicationLoadingSchema);
+        Dataset<Row> appLoadedEvents = applicationIngestion.runIngestion();
 
         registeredEvents.printSchema();
 

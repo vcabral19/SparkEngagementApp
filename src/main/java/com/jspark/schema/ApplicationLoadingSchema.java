@@ -13,7 +13,7 @@ public class ApplicationLoadingSchema {
     };
     private final static StructType applicationLoadingSchema = DataTypes.createStructType(fields);
 
-    public static StructType getApplicationLoadingSchema(){
+    public static StructType getSchema(){
         return applicationLoadingSchema;
     }
 }

@@ -13,7 +13,7 @@ public class UserRegistrationSchema {
     };
     private final static StructType userRegistrationSchema = DataTypes.createStructType(fields);
 
-    public static StructType getUserRegistrationSchema(){
+    public static StructType getSchema(){
         return userRegistrationSchema;
     }
 
