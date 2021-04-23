@@ -21,8 +21,16 @@ public class FirstWeekEngagementMetric {
                 .between(appLoadedEvents.col("day"), appLoadedEvents.col("endOfWeek"));
     }
 
+    public static Dataset<Row> joinApplyingCalendarDateConditions(Dataset<Row> registeredEvents, Dataset<Row> appLoadedEvents){
+        return registeredEvents.as("registered").join(appLoadedEvents.as("loaded"),
+                registeredEvents.col("initiator_id").equalTo(appLoadedEvents.col("initiator_id"))
+                        .and(getEventsBetweenTomorrowAndNextSunday(registeredEvents, appLoadedEvents)
+                        )
+        ).drop(appLoadedEvents.col("initiator_id"));
+    }
+
     public static double calculateFirstWeekFractionOfActiveUsers(Dataset<Row> allAppLoadedEventsAfterAWeekOfRegistration){
-        long countAllAppLoadedAfterRegistration= allAppLoadedEventsAfterAWeekOfRegistration.count();
+        long countAllAppLoadedAfterRegistration = allAppLoadedEventsAfterAWeekOfRegistration.count();
         long allAppLoadedEventsAfterAWeekOfUserRegistered = allAppLoadedEventsAfterAWeekOfRegistration.select(
                 allAppLoadedEventsAfterAWeekOfRegistration.col("initiator_id")
         ).distinct().count();

@@ -4,6 +4,7 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 
+//TODO refactor me completely
 public class DataSource {
 
     private static final String dataSourcePath = "data/raw/dataset.json";
