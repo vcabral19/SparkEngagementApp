@@ -29,12 +29,12 @@ public class FirstWeekEngagementMetricCalculator {
         ).drop(appLoadedEvents.col("initiator_id"));
     }
 
-    public static double calculateFirstWeekFractionOfActiveUsers(Dataset<Row> allAppLoadedEventsAfterAWeekOfRegistration){
-        long countAllAppLoadedAfterRegistration = allAppLoadedEventsAfterAWeekOfRegistration.count();
-        long allAppLoadedEventsAfterAWeekOfUserRegistered = allAppLoadedEventsAfterAWeekOfRegistration.select(
-                allAppLoadedEventsAfterAWeekOfRegistration.col("initiator_id")
+    public static double calculateFirstWeekFractionOfActiveUsers(Dataset<Row> registeredEvents, Dataset<Row> appLoadedEventsAfterAWeekOfRegistration){
+        long countAllRegisteredEvents = registeredEvents.count();
+        long countUserWhoLoadedAppAtLeastOnceAfterAWeek = appLoadedEventsAfterAWeekOfRegistration.select(
+                registeredEvents.col("initiator_id")
         ).distinct().count();
-        return (double) allAppLoadedEventsAfterAWeekOfUserRegistered / countAllAppLoadedAfterRegistration;
+        return (double) countUserWhoLoadedAppAtLeastOnceAfterAWeek / countAllRegisteredEvents;
     }
 
     public static void printResult(double calculatedMetric){
