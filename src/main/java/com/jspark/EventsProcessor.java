@@ -1,7 +1,7 @@
 package com.jspark;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.jspark.steps.AnalyticsFirstWeekEngagementStep;
+import com.jspark.steps.EventsIngestorStep;
 
 public class EventsProcessor {
     // private static final Logger LOGGER = Logger.getLogger(EventsProcessor.class.getName() );
@@ -10,10 +10,12 @@ public class EventsProcessor {
         try {
             String step = args[0];
             if(step.equals("step1")){
-                EventsIngestorStep.run();
+                EventsIngestorStep pipelineStep = new EventsIngestorStep();
+                pipelineStep.run();
             }
             else{
-                AnalalyticsFirstWeekEngamentStep.run();
+                AnalyticsFirstWeekEngagementStep pipelineStep = new AnalyticsFirstWeekEngagementStep();
+                pipelineStep.run();
             }
         }
         catch (ArrayIndexOutOfBoundsException exception){

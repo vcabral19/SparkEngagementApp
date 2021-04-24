@@ -7,15 +7,7 @@ import org.apache.spark.sql.functions;
 
 import java.text.DecimalFormat;
 
-public class FirstWeekEngagementMetric {
-
-    //TODO wip
-    private Dataset<Row> registeredEvents;
-    private Dataset<Row> appLoadedEvents;
-
-    public void FirstWeekEngagementMetric(Dataset<Row> registeredEvents, Dataset<Row> appLoadedEvents){
-
-    }
+public class FirstWeekEngagementMetricCalculator {
 
     public static Dataset<Row> createProcessableDateColumns(Dataset<Row> datasetWithTimestamp){
         return datasetWithTimestamp

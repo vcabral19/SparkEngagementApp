@@ -1,4 +1,4 @@
-package com.jspark;
+package com.jspark.steps;
 
 import com.jspark.ingestion.ApplicationLoadingIngestion;
 import com.jspark.ingestion.UserRegistrationIngestion;
@@ -13,24 +13,24 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.StructType;
 
-public class EventsIngestorStep {
+public class EventsIngestorStep implements StepInterface {
     private static final String path = "data/raw/dataset.json";
     private static final DataFormats dataFormat = DataFormats.JSON;
     private static final StructType userRegistrationSchema = UserRegistrationSchema.getSchema();
     private static final StructType applicationLoadingSchema = ApplicationLoadingSchema.getSchema();
 
-    public static void run(){
+    public EventsIngestorStep(){};
+
+    public void run(){
         SparkSession spark = SparkSession.builder()
                 .appName("EventsIngestor").master("local[*]")
                 .getOrCreate();
         //TODO get executors variable and etc as env var and set dev as fallback
 
-        //TODO user interface for DataSource and maybe in other stuff
-        LocalFileSystemDataSource localFileSystemDataSource = new LocalFileSystemDataSource(spark, dataFormat, path);
+        LocalFileSystemDataSource localFileSystemDataReader = new LocalFileSystemDataSource(spark);
 
-        Dataset<Row> eventSource = localFileSystemDataSource.getDataFromSource();
+        Dataset<Row> eventSource = localFileSystemDataReader.getDataFromSource(dataFormat, path);
 
-        //TODO make this an object and remove static
         UserRegistrationIngestion userIngestion = new UserRegistrationIngestion(eventSource, userRegistrationSchema);
         Dataset<Row> registeredEvents = userIngestion.runIngestion();
 

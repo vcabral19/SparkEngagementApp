@@ -4,26 +4,24 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 
-public class LocalFileSystemDataSource {
+public class LocalFileSystemDataSource implements DataSourceInterface {
 
     private final SparkSession spark;
-    private final DataFormats dataFormat;
-    private final String dataSourcePath;
 
-    public LocalFileSystemDataSource(SparkSession spark, DataFormats dataFormat, String path){
+
+    public LocalFileSystemDataSource(SparkSession spark){
         this.spark = spark;
-        this.dataFormat = dataFormat;
-        this.dataSourcePath = path;
+
     }
 
-    public Dataset<Row> getDataFromSource(){
-        switch (this.dataFormat) {
+    public Dataset<Row> getDataFromSource(DataFormats dataFormat, String dataSourcePath){
+        switch (dataFormat) {
             case JSON:
-                return this.spark.read().json(this.dataSourcePath);
+                return this.spark.read().json(dataSourcePath);
             case PARQUET:
-                return this.spark.read().parquet(this.dataSourcePath);
+                return this.spark.read().parquet(dataSourcePath);
             default:
-                throw new IllegalArgumentException(this.dataFormat + " is an invalid  or not implemented Data Format");
+                throw new IllegalArgumentException(dataFormat + " is an invalid  or not implemented Data Format");
         }
     }
 }
