@@ -21,13 +21,13 @@ To run step2 you need to first run step1 in order to generate the data for it to
 ### Generating .jar
 
 In order to generate the .jar file for the package just run:
-```
+```bash
 mvn --file pom.xml clean
 ```
 
 and then
 
-```
+```bash
 mvn --file pom.xml package
 ```
 The artifact should be created at "target/SparkEngagementApp-1.0-SNAPSHOT.jar" in the project folder by default.
@@ -43,7 +43,7 @@ for the ingestion and
 for getting the print with the result of the engagement metric like in the following example
 
 
-```
+```bash
 spark-submit --class com.jspark.EventsProcessor target/SparkEngagementApp-1.0-SNAPSHOT.jar step1
 ```
 
@@ -96,15 +96,36 @@ Considering that "target/SparkEngagementApp-1.0-SNAPSHOT.jar" is you generated .
 
 ```
 
-#### EventProcessor.java
-Job entrypoint class
-#### analytics
+
+* EventProcessor.java: Job entrypoint class
+
+* analytics:
 spark core logic for the Engagement Metric
-#### config
+* config:
 object used to obtain variables for either the System (env vars) or the properties file in the resources folder
-#### generic.transformations
+
+* generic.transformations:
 static logic with higher pontential to be reused (something like a utils)
-####
+
+* ingestion:
+ingestion logic for the step1
+
+* read:
+encapsulated data reader module
+
+* schema
+static single point of truth for the processed datasets schema
+
+* steps
+definition of the steps (step1 ingestion and step2 analytics)
+
+* write
+encapsulated writer module
+
+## Possible Improvements
+
+* Define a standarized logger object
+* Changing the prints to log
 
 
-
+Feel free to take a look at the code and let me know if you have any questions.
