@@ -1,6 +1,9 @@
 # SparkEngagementApp
 A Java Spark Application for Ingest and Calculate Engagement for recently registered user
 
+## tl;dr
+spark-submit passing step1 or step2 as arguments
+
 ## Requirements
 #### Open JDK 11.0.10
 #### Spark 3.1.1
