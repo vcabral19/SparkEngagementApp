@@ -125,12 +125,12 @@ definition of the steps (step1 ingestion and step2 analytics)
 * write
 encapsulated writer module
 
+and finally 
+* data: raw directory is where you should put your data
+
 ## Possible Improvements
 
 * Define a standarized logger object
 * Changing the prints to log
-
-and finally 
-* data: raw directory is where you should put your data
 
 Feel free to take a look at the code and let me know if you have any questions.
