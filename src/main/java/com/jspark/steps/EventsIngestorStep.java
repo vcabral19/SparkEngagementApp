@@ -14,22 +14,29 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.StructType;
 
 public class EventsIngestorStep implements StepInterface {
-    private static final String path = "data/raw/dataset.json";
-    private static final DataFormats dataFormat = DataFormats.JSON;
-    private static final StructType userRegistrationSchema = UserRegistrationSchema.getSchema();
-    private static final StructType applicationLoadingSchema = ApplicationLoadingSchema.getSchema();
+    private final String sourcePath;
+    private final String registeredWritePath;
+    private final String appLoadedWritePath;
+    private final String sparkMasterConfig;
+    private final DataFormats dataFormat = DataFormats.JSON;
+    private final StructType userRegistrationSchema = UserRegistrationSchema.getSchema();
+    private final StructType applicationLoadingSchema = ApplicationLoadingSchema.getSchema();
 
-    public EventsIngestorStep(){};
+    public EventsIngestorStep(String sourcePath, String registeredPath, String appLoadedPath, String sparkMasterConfig){
+        this.sourcePath = sourcePath;
+        this.registeredWritePath = registeredPath;
+        this.appLoadedWritePath = appLoadedPath;
+        this.sparkMasterConfig = sparkMasterConfig;
+    }
 
     public void run(){
         SparkSession spark = SparkSession.builder()
-                .appName("EventsIngestor").master("local[*]")
+                .appName("EventsIngestor").master(sparkMasterConfig)
                 .getOrCreate();
-        //TODO get executors variable and etc as env var and set dev as fallback
 
         LocalFileSystemDataSource localFileSystemDataReader = new LocalFileSystemDataSource(spark);
 
-        Dataset<Row> eventSource = localFileSystemDataReader.getDataFromSource(dataFormat, path);
+        Dataset<Row> eventSource = localFileSystemDataReader.getDataFromSource(dataFormat, sourcePath);
 
         UserRegistrationIngestion userIngestion = new UserRegistrationIngestion(eventSource, userRegistrationSchema);
         Dataset<Row> registeredEvents = userIngestion.runIngestion();
@@ -41,8 +48,7 @@ public class EventsIngestorStep implements StepInterface {
 
         appLoadedEvents.printSchema();
 
-        //TODO move the path logic from out of here
-        DataWriter.saveEventsAsParquet(registeredEvents, System.getProperty("user.dir") + "/data/processed/registered");
-        DataWriter.saveEventsAsParquet(appLoadedEvents, System.getProperty("user.dir") + "/data/processed/app_loaded");
+        DataWriter.saveEventsAsParquet(registeredEvents, registeredWritePath);
+        DataWriter.saveEventsAsParquet(appLoadedEvents, appLoadedWritePath);
     }
 }

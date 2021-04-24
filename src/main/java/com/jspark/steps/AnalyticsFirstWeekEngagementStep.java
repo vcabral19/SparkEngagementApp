@@ -8,15 +8,20 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 
 public class AnalyticsFirstWeekEngagementStep implements StepInterface {
-    private static final String registeredProcessedEventsPath = System.getProperty("user.dir") + "/data/processed/registered";
-    private static final String appLoadedProcessedEventsPath = System.getProperty("user.dir") + "/data/processed/app_loaded";
-    private static final DataFormats dataFormat = DataFormats.PARQUET;
+    private final String registeredProcessedEventsPath;
+    private final String appLoadedProcessedEventsPath;
+    private final String sparkMasterConfig;
+    private final DataFormats dataFormat = DataFormats.PARQUET;
 
-    public AnalyticsFirstWeekEngagementStep(){};
+    public AnalyticsFirstWeekEngagementStep(String registeredPath, String appLoadedPath, String sparkMasterConfig){
+        this.registeredProcessedEventsPath = registeredPath;
+        this.appLoadedProcessedEventsPath = appLoadedPath;
+        this.sparkMasterConfig = sparkMasterConfig;
+    }
 
     public void run(){
         SparkSession spark = SparkSession.builder()
-                .appName("FirstWeekEngagement").master("local[*]")
+                .appName("FirstWeekEngagement").master(sparkMasterConfig)
                 .getOrCreate();
 
         LocalFileSystemDataSource localFileSystemDataReader = new LocalFileSystemDataSource(spark);
@@ -30,7 +35,7 @@ public class AnalyticsFirstWeekEngagementStep implements StepInterface {
                 .joinApplyingCalendarDateConditions(registeredEvents, appLoadedEvents);
 
         double resultFraction = FirstWeekEngagementMetricCalculator
-                .calculateFirstWeekFractionOfActiveUsers(appLoadedEventsAfterAWeekOfRegistration);
+                .calculateFirstWeekFractionOfActiveUsers(registeredEvents, appLoadedEventsAfterAWeekOfRegistration);
 
         FirstWeekEngagementMetricCalculator.printResult(resultFraction);
 

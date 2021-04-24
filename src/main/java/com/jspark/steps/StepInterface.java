@@ -1,5 +1,3 @@
 package com.jspark.steps;
 
-public interface StepInterface {
-    void run();
-}
+public interface StepInterface { void run(); }
