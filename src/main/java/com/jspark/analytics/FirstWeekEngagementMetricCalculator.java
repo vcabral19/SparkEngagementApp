@@ -13,12 +13,12 @@ public class FirstWeekEngagementMetricCalculator {
         return datasetWithTimestamp
                 .withColumn("dayofweek", functions.date_format(datasetWithTimestamp.col("timestamp"), "E"))
                 .withColumn("day", functions.date_trunc("DD", datasetWithTimestamp.col("timestamp")))
+                .withColumn("tomorrow", functions.date_add(functions.date_trunc("DD", datasetWithTimestamp.col("timestamp")), 1))
                 .withColumn("endOfWeek", functions.next_day(datasetWithTimestamp.col("timestamp"), "Sunday"));
     }
 
    public static Column getEventsBetweenTomorrowAndNextSunday(Dataset<Row> registeredEvents, Dataset<Row> appLoadedEvents){
-        return functions.date_add(registeredEvents.col("day"), 1)
-                .between(appLoadedEvents.col("day"), appLoadedEvents.col("endOfWeek"));
+        return appLoadedEvents.col("day").between(registeredEvents.col("tomorrow"), registeredEvents.col("endOfWeek"));
     }
 
     public static Dataset<Row> joinApplyingCalendarDateConditions(Dataset<Row> registeredEvents, Dataset<Row> appLoadedEvents){
