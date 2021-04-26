@@ -15,9 +15,9 @@ public class EventsSourceSchema {
             DataTypes.createStructField("campaign", DataTypes.StringType, true),
             DataTypes.createStructField("channel", DataTypes.StringType, true)
     };
-    private final static StructType applicationLoadingSchema = DataTypes.createStructType(fields);
+    private final static StructType eventsSourceSchema = DataTypes.createStructType(fields);
 
     public static StructType getSchema(){
-        return applicationLoadingSchema;
+        return eventsSourceSchema;
     }
 }
