@@ -33,6 +33,7 @@ public class EventsIngestorStep implements StepInterface {
         SparkSession spark = SparkSession.builder()
                 .appName("EventsIngestor").master(sparkMasterConfig)
                 .getOrCreate();
+        spark.conf().set("spark.sql.session.timeZone", "UTC");
 
         LocalFileSystemDataSource localFileSystemDataReader = new LocalFileSystemDataSource(spark);
 

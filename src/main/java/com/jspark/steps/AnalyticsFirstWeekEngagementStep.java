@@ -23,6 +23,7 @@ public class AnalyticsFirstWeekEngagementStep implements StepInterface {
         SparkSession spark = SparkSession.builder()
                 .appName("FirstWeekEngagement").master(sparkMasterConfig)
                 .getOrCreate();
+        spark.conf().set("spark.sql.session.timeZone", "UTC");
 
         LocalFileSystemDataSource localFileSystemDataReader = new LocalFileSystemDataSource(spark);
         Dataset<Row> registeredEvents = localFileSystemDataReader.getDataFromSource(dataFormat, registeredProcessedEventsPath);
