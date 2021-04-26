@@ -3,6 +3,7 @@ package com.jspark.steps;
 import com.jspark.ingestion.ApplicationLoadingIngestion;
 import com.jspark.ingestion.UserRegistrationIngestion;
 import com.jspark.read.LocalFileSystemDataSource;
+import com.jspark.schema.EventsSourceSchema;
 import com.jspark.schema.ApplicationLoadingSchema;
 import com.jspark.schema.UserRegistrationSchema;
 import com.jspark.read.DataFormats;
@@ -19,6 +20,7 @@ public class EventsIngestorStep implements StepInterface {
     private final String appLoadedWritePath;
     private final String sparkMasterConfig;
     private final DataFormats dataFormat = DataFormats.JSON;
+    private final StructType eventsSourceSchema = EventsSourceSchema.getSchema();
     private final StructType userRegistrationSchema = UserRegistrationSchema.getSchema();
     private final StructType applicationLoadingSchema = ApplicationLoadingSchema.getSchema();
 
@@ -37,7 +39,8 @@ public class EventsIngestorStep implements StepInterface {
 
         LocalFileSystemDataSource localFileSystemDataReader = new LocalFileSystemDataSource(spark);
 
-        Dataset<Row> eventSource = localFileSystemDataReader.getDataFromSource(dataFormat, sourcePath);
+        Dataset<Row> eventSource = localFileSystemDataReader.getDataFromSource(dataFormat, sourcePath, eventsSourceSchema);
+
 
         UserRegistrationIngestion userIngestion = new UserRegistrationIngestion(eventSource, userRegistrationSchema);
         Dataset<Row> registeredEvents = userIngestion.runIngestion();
