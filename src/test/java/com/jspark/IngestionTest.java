@@ -1,5 +1,6 @@
 package com.jspark;
 
+import com.jspark.write.DataWriter;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SaveMode;
@@ -35,10 +36,8 @@ public class IngestionTest extends SessionContext {
 
 
         String expectedPath = System.getProperty("user.dir") + "/src/test/dummy_processed/registered/";
-        dfResult.write()
-                .mode(SaveMode.Overwrite)
-                .format("parquet")
-                .save(expectedPath);
+        DataWriter.saveEventsAsParquet(dfResult, expectedPath);
+
 
         Dataset<Row> expectedDf = this.spark.read().parquet(expectedPath);
 
@@ -58,10 +57,8 @@ public class IngestionTest extends SessionContext {
 
 
         String expectedPath = System.getProperty("user.dir") + "/src/test/dummy_processed/app_loaded/";
-        dfResult.write()
-                .mode(SaveMode.Overwrite)
-                .format("parquet")
-                .save(expectedPath);
+        DataWriter.saveEventsAsParquet(dfResult, expectedPath);
+
 
         Dataset<Row> expectedDf = this.spark.read().parquet(expectedPath);
 
