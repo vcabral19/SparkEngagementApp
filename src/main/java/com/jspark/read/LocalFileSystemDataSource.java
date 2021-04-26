@@ -31,7 +31,7 @@ public class LocalFileSystemDataSource implements DataSourceInterface {
             case JSON:
                 return this.spark.read().schema(schema).json(dataSourcePath);
             case PARQUET:
-                return this.spark.read().parquet(dataSourcePath);
+                return this.spark.read().schema(schema).parquet(dataSourcePath);
             default:
                 throw new IllegalArgumentException(dataFormat + " is an invalid or not implemented Data Format");
         }
