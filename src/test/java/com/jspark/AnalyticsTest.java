@@ -57,5 +57,6 @@ public class AnalyticsTest extends SessionContext{
         assertEquals(RowFactory.create(2), expectedIds.get(1));
         assertEquals(0.4, resultFraction);
 
+        FirstWeekEngagementMetricCalculator.printResult(resultFraction);
     }
 }

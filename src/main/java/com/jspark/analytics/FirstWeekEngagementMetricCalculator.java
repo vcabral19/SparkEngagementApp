@@ -38,8 +38,8 @@ public class FirstWeekEngagementMetricCalculator {
     }
 
     public static void printResult(double calculatedMetric){
-        String printableResult = new DecimalFormat("#.###").format(calculatedMetric);
+        String printableResult = new DecimalFormat("#.###").format(calculatedMetric * 100);
         System.out.println("Fraction of users who loaded the application at least once during the calendar week" +
-                " after the registration -> " + printableResult);
+                " after the registration -> " + printableResult + "%");
     }
 }
