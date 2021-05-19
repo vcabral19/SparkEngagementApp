@@ -3,6 +3,7 @@ package com.jspark;
 import com.jspark.config.SparkJobVariables;
 import com.jspark.steps.AnalyticsFirstWeekEngagementStep;
 import com.jspark.steps.EventsIngestorStep;
+import com.jspark.steps.StepInterface;
 
 public class EventsProcessor {
 
@@ -19,16 +20,16 @@ public class EventsProcessor {
     public void execute(String[] args){
         try {
             String step = args[0];
+            StepInterface pipelineStep;
             if(step.equals("step1")){
-                EventsIngestorStep pipelineStep = new EventsIngestorStep(eventsSourcePath,
+                pipelineStep = new EventsIngestorStep(eventsSourcePath,
                         processedRegisteredEventsPath, processedAppLoadedEventsPath, sparkMasterConfig);
-                pipelineStep.run();
             }
             else{
-                AnalyticsFirstWeekEngagementStep pipelineStep = new AnalyticsFirstWeekEngagementStep(
+                pipelineStep = new AnalyticsFirstWeekEngagementStep(
                         processedRegisteredEventsPath, processedAppLoadedEventsPath, sparkMasterConfig);
-                pipelineStep.run();
             }
+            pipelineStep.run();
         }
         catch (ArrayIndexOutOfBoundsException exception){
             System.out.println("You must specify a valid step as argument for this Spark Application");
