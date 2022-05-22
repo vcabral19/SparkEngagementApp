@@ -50,7 +50,7 @@ for getting the print with the result of the engagement metric like in the follo
 spark-submit --class com.jspark.EventsProcessor target/SparkEngagementApp-1.0-SNAPSHOT.jar step1
 ```
 
-Considering that "target/SparkEngagementApp-1.0-SNAPSHOT.jar" is you generated .jar for the application and "step1" is the argument.
+Considering that "target/SparkEngagementApp-1.0-SNAPSHOT.jar" is your generated .jar for the application and "step1" is the argument.
 
 ### Project Structure
 
@@ -132,5 +132,3 @@ and finally
 
 * Define a standarized logger object
 * Changing the prints to log
-
-Feel free to take a look at the code and let me know if you have any questions.
