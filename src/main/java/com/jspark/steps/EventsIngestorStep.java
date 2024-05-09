@@ -1,6 +1,7 @@
 package com.jspark.steps;
 
 import com.jspark.ingestion.ApplicationLoadingIngestion;
+import com.jspark.ingestion.IngestionInterface;
 import com.jspark.ingestion.UserRegistrationIngestion;
 import com.jspark.read.LocalFileSystemDataSource;
 import com.jspark.schema.EventsSourceSchema;
@@ -42,10 +43,10 @@ public class EventsIngestorStep implements StepInterface {
         Dataset<Row> eventSource = localFileSystemDataReader.getDataFromSource(dataFormat, sourcePath, eventsSourceSchema);
 
 
-        UserRegistrationIngestion userIngestion = new UserRegistrationIngestion(eventSource, userRegistrationSchema);
+        IngestionInterface userIngestion = new UserRegistrationIngestion(eventSource, userRegistrationSchema);
         Dataset<Row> registeredEvents = userIngestion.runIngestion();
 
-        ApplicationLoadingIngestion applicationIngestion = new ApplicationLoadingIngestion(eventSource, applicationLoadingSchema);
+        IngestionInterface applicationIngestion = new ApplicationLoadingIngestion(eventSource, applicationLoadingSchema);
         Dataset<Row> appLoadedEvents = applicationIngestion.runIngestion();
 
         registeredEvents.printSchema();
